@@ -23,26 +23,32 @@ public class UserService {
         return userRepository.findAll().stream().map(this::mapToUserResponse).toList();
     }
 
-    public Optional<UserResponse> fetchUserById(Long id){
+    public Optional<UserResponse> fetchUserById(String id){
        return userRepository.findById(id).map(this::mapToUserResponse);
     }
 
     public String createUser(UserRequest userRequest) {
         User user = new User();
         BeanUtils.copyProperties(userRequest, user);
-        user.setAddresses(userRequest.getAddresses().stream().map(this::mapToAddress).toList());
-        user.getAddresses().forEach(address -> address.setUser(user));
+        if (userRequest.getAddresses() != null) {
+            user.setAddresses(userRequest.getAddresses().stream().map(this::mapToAddress).toList());
+        }
         userRepository.save(user);
         return "User created successfully";
     }
 
-    public Optional<Boolean> updateUser(Long id, UserRequest updatedUser){
+    public Optional<Boolean> updateUser(String id, UserRequest updatedUser){
         return userRepository.findById(id)
                 .map(existingUser -> {
                     BeanUtils.copyProperties(updatedUser, existingUser, "id", "addresses");
-                    existingUser.getAddresses().clear();
-                    existingUser.getAddresses().addAll(updatedUser.getAddresses().stream().map(this::mapToAddress).toList());
-                    existingUser.getAddresses().forEach(address -> address.setUser(existingUser));
+                    if (existingUser.getAddresses() == null) {
+                        existingUser.setAddresses(new java.util.ArrayList<>());
+                    } else {
+                        existingUser.getAddresses().clear();
+                    }
+                    if (updatedUser.getAddresses() != null) {
+                        existingUser.getAddresses().addAll(updatedUser.getAddresses().stream().map(this::mapToAddress).toList());
+                    }
                     userRepository.save(existingUser);
                     return true;
                 });

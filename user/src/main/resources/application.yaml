@@ -3,17 +3,13 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:local}
   config:
     import: optional:file:./configs/.env-${spring.profiles.active}[.properties]
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  datasource:
-    url: ${USER_DATASOURCE_URL}
-    username: ${USER_DB_USERNAME}
-    password: ${USER_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
   application:
     name: user-ms
+  mongodb:
+    uri: ${USER_DATASOURCE_URL}
+    database: ${USER_DB_NAME}
+    username: ${USER_DB_USERNAME}
+    password: ${USER_DB_PASSWORD}
 
 management:
   endpoints:

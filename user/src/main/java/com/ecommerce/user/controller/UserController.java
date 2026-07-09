@@ -43,7 +43,7 @@ public class UserController {
                             schema = @Schema(implementation = UserResponse.class))),
             @ApiResponse(responseCode = "404", description = "Usuario nao encontrado")
     })
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable String id) {
         return userService.fetchUserById(id).map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -66,7 +66,7 @@ public class UserController {
                             schema = @Schema(implementation = UserResponse.class))),
             @ApiResponse(responseCode = "404", description = "Usuario nao encontrado")
     })
-    public ResponseEntity<Boolean> updateUser(@PathVariable Long id, @RequestBody UserRequest updatedUser) {
+    public ResponseEntity<Boolean> updateUser(@PathVariable String id, @RequestBody UserRequest updatedUser) {
         return userService.updateUser(id, updatedUser).map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
