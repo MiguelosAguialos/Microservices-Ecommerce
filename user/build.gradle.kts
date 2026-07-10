@@ -1,3 +1,5 @@
+import com.google.cloud.tools.jib.gradle.JibExtension
+
 plugins {
 	java
 	id("org.springframework.boot") version "4.1.0"
@@ -18,8 +20,11 @@ repositories {
 	mavenCentral()
 }
 
+extra["springCloudVersion"] = "2025.1.2"
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	compileOnly("org.projectlombok:lombok")
@@ -34,6 +39,22 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok")
 }
 
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+configure<JibExtension> {
+	to {
+		image = "ecommerce/user-ms"
+		tags = setOf(project.version.toString(), "latest")
+	}
+	container {
+		jvmFlags = mutableListOf("-Xms256m", "-Xmx512m")
+		creationTime.set("USE_CURRENT_TIMESTAMP")
+	}
 }

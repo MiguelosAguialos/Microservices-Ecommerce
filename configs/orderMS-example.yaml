@@ -1,0 +1,11 @@
+db:
+  url: ""
+  username: ""
+  password: ""
+  name: ""
+
+info:
+  app:
+    name: ""
+    description: ""
+    version: ""

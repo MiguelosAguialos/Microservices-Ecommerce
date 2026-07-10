@@ -1,27 +1,4 @@
 services:
-#  user-db:
-#    image: postgres:latest
-#    container_name: user-db
-#    mem_limit: 512m
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 512m
-#    environment:
-#      POSTGRES_USER: "${USER_DB_USERNAME}"
-#      POSTGRES_PASSWORD: "${USER_DB_PASSWORD}"
-#      POSTGRES_DB: "${USER_DB_NAME}"
-#    ports:
-#      - "5433:5432"
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
-#      interval: 20s
-#      timeout: 5s
-#      retries: 10
-#      start_period: 10s
-#    extends:
-#      file: ./common-config.yml
-#      service: network-deploy-service
   user-db:
     image: mongo:latest
     container_name: user-db
@@ -105,6 +82,86 @@ services:
     extends:
       file: ./common-config.yml
       service: network-deploy-service
+  configserver:
+    image: ecommerce/configserver
+    container_name: configserver
+    mem_limit: 512m
+#   VOLUME with configs only to deploy in local/testing docker env, not production. Make sure that the configs folder is ok.
+    volumes:
+      - ../../configs:/workspace/configs:ro
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      SPRING_PROFILES_ACTIVE: native,dev
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/workspace/configs
+    ports:
+      - "8888:8888"
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
+  userMS:
+    image: ecommerce/user-ms
+    container_name: userMS
+    mem_limit: 512m
+    depends_on:
+      - configserver
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      CONFIGSERVER_URI: http://configserver:8888
+    ports:
+      - "8082:8082"
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
+  productMS:
+    image: ecommerce/product-ms
+    container_name: productMS
+    mem_limit: 512m
+    depends_on:
+      - configserver
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      CONFIGSERVER_URI: http://configserver:8888
+    ports:
+      - "8081:8081"
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
+#  orderMS:
+#    image: postgres:latest
+#    container_name: product-db
+#    mem_limit: 512m
+#    depends_on:
+#      - configserver
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 512m
+#    environment:
+#      POSTGRES_USER: "${PRODUCT_DB_USERNAME}"
+#      POSTGRES_PASSWORD: "${PRODUCT_DB_PASSWORD}"
+#      POSTGRES_DB: "${PRODUCT_DB_NAME}"
+#    ports:
+#      - "8083:8083"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+#      interval: 20s
+#      timeout: 5s
+#      retries: 10
+#      start_period: 10s
+#    extends:
+#      file: ./common-config.yml
+#      service: network-deploy-service
 networks:
   ecommerce:
     driver: bridge

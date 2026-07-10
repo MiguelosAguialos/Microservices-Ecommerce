@@ -1,7 +1,0 @@
-services:
-  network-deploy-service:
-    restart: no
-    env_file:
-      - ../../../configs/.env-${PROFILE:-dev}
-    networks:
-      - ecommerce

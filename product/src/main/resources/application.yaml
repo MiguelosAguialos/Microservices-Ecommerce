@@ -1,19 +1,17 @@
 spring:
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
   config:
-    import: optional:file:./configs/.env-${spring.profiles.active}[.properties]
+    import: optional:configserver:${CONFIGSERVER_URI:http://localhost:8888}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   datasource:
-    url: ${PRODUCT_DATASOURCE_URL}
-    username: ${PRODUCT_DB_USERNAME}
-    password: ${PRODUCT_DB_PASSWORD}
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
     driver-class-name: org.postgresql.Driver
   application:
-    name: product-ms
+    name: productMS
 
 management:
   endpoints:
@@ -35,6 +33,7 @@ server:
 
 info:
   app:
-    name: product-ms
-    description: Product microservice for ecommerce app
-    version: 0.0.1
+    name: ${info.app.name}
+    description: ${info.app.description}
+    version: ${info.app.version}
+    profile: ${spring.profiles.active}
