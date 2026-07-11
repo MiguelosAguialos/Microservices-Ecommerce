@@ -13,6 +13,9 @@ server:
   port: ${CONFIGSERVER_PORT:8888}
   shutdown: graceful
 
+encrypt:
+  key: ${ENCRYPT_KEY:}
+
 management:
   endpoints:
     web:
