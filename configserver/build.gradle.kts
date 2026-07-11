@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.ecommerce"
-version = "0.0.1"
+version = "0.0.2"
 
 java {
 	toolchain {
@@ -23,6 +23,7 @@ repositories {
 extra["springCloudVersion"] = "2025.1.2"
 
 dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.cloud:spring-cloud-config-server")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

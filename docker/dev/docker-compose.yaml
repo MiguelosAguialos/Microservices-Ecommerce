@@ -86,16 +86,12 @@ services:
     image: ecommerce/configserver
     container_name: configserver
     mem_limit: 512m
-#   VOLUME with configs only to deploy in local/testing docker env, not production. Make sure that the configs folder is ok.
-    volumes:
-      - ../../configs:/workspace/configs:ro
     deploy:
       resources:
         limits:
           memory: 512m
     environment:
-      SPRING_PROFILES_ACTIVE: native,dev
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/workspace/configs
+      CONFIG_REPO_PASSWORD: "${CONFIG_REPO_PASSWORD}"
     ports:
       - "8888:8888"
     extends:

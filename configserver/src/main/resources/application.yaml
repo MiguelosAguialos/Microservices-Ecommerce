@@ -1,12 +1,37 @@
 spring:
   application:
     name: configserver
-  profiles:
-    active: native
   cloud:
     config:
       server:
-        native:
-          search-locations: file:./configs,file:../configs,classpath:/configs
+        git:
+          uri: ${CONFIG_REPO_URI:https://github.com/MiguelosAguialos/microservices-configs.git}
+          default-label: ${CONFIG_REPO_DEFAULT_LABEL:main}
+          username: ${CONFIG_REPO_USERNAME:MiguelosAguialos}
+          password: ${CONFIG_REPO_PASSWORD:}
 server:
-  port: 8888
+  port: ${CONFIGSERVER_PORT:8888}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.config.server: INFO
