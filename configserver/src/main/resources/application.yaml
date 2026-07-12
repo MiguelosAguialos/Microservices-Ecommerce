@@ -9,6 +9,12 @@ spring:
           default-label: ${CONFIG_REPO_DEFAULT_LABEL:main}
           username: ${CONFIG_REPO_USERNAME:MiguelosAguialos}
           password: ${CONFIG_REPO_PASSWORD:}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:}
+
 server:
   port: ${CONFIGSERVER_PORT:8888}
   shutdown: graceful
@@ -20,7 +26,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,busrefresh
   endpoint:
     health:
       probes:

@@ -82,6 +82,14 @@ services:
     extends:
       file: ./common-config.yml
       service: network-deploy-service
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:${RABBITMQ_PORT:-5672}"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
   configserver:
     image: ecommerce/configserver
     container_name: configserver

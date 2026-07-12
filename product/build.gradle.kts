@@ -28,6 +28,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
