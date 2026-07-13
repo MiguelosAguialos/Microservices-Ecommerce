@@ -1,0 +1,39 @@
+spring:
+  config:
+    import: optional:configserver:${CONFIGSERVER_URI:http://localhost:8888}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: org.postgresql.Driver
+  application:
+    name: orderMS
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  #    env:
+  #      show-values: always
+  info:
+    env:
+      enabled: true
+
+server:
+  shutdown: graceful
+  port: ${ORDER_PORT:8083}
+
+info:
+  app:
+    name: ${info.app.name}
+    description: ${info.app.description}
+    version: ${info.app.version}
+    profile: ${spring.profiles.active}
