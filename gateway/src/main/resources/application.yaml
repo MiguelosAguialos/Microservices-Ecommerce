@@ -1,0 +1,35 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: productMS
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/products/**
+            - id: userMS
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/users/**
+            - id: orderMS
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/orders/**, /api/cart/**
+  application:
+    name: gateway
+
+server:
+  port: 8080
+
+#logging:
+#  level:
+#    root: info
+#    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
+#    org.springframework.cloud.gateway: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
