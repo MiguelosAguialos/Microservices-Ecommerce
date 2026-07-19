@@ -90,6 +90,15 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
       RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
   configserver:
     image: ecommerce/configserver
     container_name: configserver
@@ -98,10 +107,36 @@ services:
       resources:
         limits:
           memory: 512m
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     environment:
       CONFIG_REPO_PASSWORD: "${CONFIG_REPO_PASSWORD}"
+      ENCRYPT_KEY: "${ENCRYPT_KEY}"
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health/readiness || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     ports:
       - "8888:8888"
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
+  eureka:
+    image: ecommerce/eureka
+    container_name: eureka
+    mem_limit: 512m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    ports:
+      - "8761:8761"
     extends:
       file: ./common-config.yml
       service: network-deploy-service
@@ -110,13 +145,13 @@ services:
     container_name: userMS
     mem_limit: 512m
     depends_on:
-      - configserver
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 512m
     environment:
-      SPRING_PROFILES_ACTIVE: dev
       CONFIGSERVER_URI: http://configserver:8888
     ports:
       - "8082:8082"
@@ -128,44 +163,55 @@ services:
     container_name: productMS
     mem_limit: 512m
     depends_on:
-      - configserver
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 512m
     environment:
-      SPRING_PROFILES_ACTIVE: dev
       CONFIGSERVER_URI: http://configserver:8888
     ports:
       - "8081:8081"
     extends:
       file: ./common-config.yml
       service: network-deploy-service
-#  orderMS:
-#    image: postgres:latest
-#    container_name: product-db
-#    mem_limit: 512m
-#    depends_on:
-#      - configserver
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 512m
-#    environment:
-#      POSTGRES_USER: "${PRODUCT_DB_USERNAME}"
-#      POSTGRES_PASSWORD: "${PRODUCT_DB_PASSWORD}"
-#      POSTGRES_DB: "${PRODUCT_DB_NAME}"
-#    ports:
-#      - "8083:8083"
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
-#      interval: 20s
-#      timeout: 5s
-#      retries: 10
-#      start_period: 10s
-#    extends:
-#      file: ./common-config.yml
-#      service: network-deploy-service
+  orderMS:
+    image: ecommerce/order-ms
+    container_name: orderMS
+    mem_limit: 512m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      CONFIGSERVER_URI: http://configserver:8888
+    ports:
+      - "8083:8083"
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
+  gateway:
+    image: ecommerce/gateway
+    container_name: gateway
+    mem_limit: 512m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIGSERVER_URI: http://configserver:8888
+    extends:
+      file: ./common-config.yml
+      service: network-deploy-service
 networks:
   ecommerce:
     driver: bridge

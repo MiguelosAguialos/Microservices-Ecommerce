@@ -31,6 +31,13 @@ server:
   shutdown: graceful
   port: ${PRODUCT_PORT:8081}
 
+eureka:
+  client:
+    fetch-registry: ${eureka.client.fetch-registry:true}
+    service-url:
+      defaultZone: ${eureka.client.service-url.defaultZone}
+    register-with-eureka: ${eureka.client.register-with-eureka:true}
+
 info:
   app:
     name: ${info.app.name}

@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.ecommerce"
-version = "0.0.2"
+version = "0.0.1"
 
 java {
 	toolchain {
@@ -24,21 +24,11 @@ extra["springCloudVersion"] = "2025.1.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-	implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp")
-	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-mongodb-test")
-	annotationProcessor("org.projectlombok:lombok")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testAnnotationProcessor("org.projectlombok:lombok")
 }
 
 dependencyManagement {
@@ -52,7 +42,7 @@ tasks.withType<Test> {
 }
 configure<JibExtension> {
 	to {
-		image = "ecommerce/user-ms"
+		image = "ecommerce/eureka"
 		tags = setOf(project.version.toString(), "latest")
 	}
 	container {

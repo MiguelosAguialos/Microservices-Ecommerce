@@ -1,3 +1,5 @@
+import com.google.cloud.tools.jib.gradle.JibExtension
+
 plugins {
 	java
 	id("org.springframework.boot") version "4.1.0"
@@ -6,7 +8,7 @@ plugins {
 }
 
 group = "com.ecommerce"
-version = "0.0.1"
+version = "0.0.2"
 
 java {
 	toolchain {
@@ -27,6 +29,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
@@ -47,4 +50,14 @@ dependencyManagement {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+configure<JibExtension> {
+	to {
+		image = "ecommerce/order-ms"
+		tags = setOf(project.version.toString(), "latest")
+	}
+	container {
+		creationTime.set("USE_CURRENT_TIMESTAMP")
+	}
 }

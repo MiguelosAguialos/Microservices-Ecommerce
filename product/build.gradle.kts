@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.ecommerce"
-version = "0.0.1"
+version = "0.0.2"
 
 java {
 	toolchain {
@@ -29,6 +29,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
@@ -56,7 +57,6 @@ configure<JibExtension> {
 		tags = setOf(project.version.toString(), "latest")
 	}
 	container {
-		jvmFlags = mutableListOf("-Xms256m", "-Xmx512m")
 		creationTime.set("USE_CURRENT_TIMESTAMP")
 	}
 }

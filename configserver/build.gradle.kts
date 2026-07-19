@@ -40,12 +40,14 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 configure<JibExtension> {
+	from {
+		image = "eclipse-temurin:25-jre-alpine"
+	}
 	to {
 		image = "ecommerce/configserver"
 		tags = setOf(project.version.toString(), "latest")
 	}
 	container {
-		jvmFlags = mutableListOf("-Xms256m", "-Xmx512m")
 		creationTime.set("USE_CURRENT_TIMESTAMP")
 	}
 }
